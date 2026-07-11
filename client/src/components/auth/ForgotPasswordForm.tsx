@@ -4,15 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import TextField from "@/components/ui/TextField";
 import Button from "@/components/ui/Button";
-import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
+import { supabase } from "@/lib/supabase";
 import {
   forgotPasswordSchema,
   type ForgotPasswordFormValues,
 } from "@/lib/validation/authSchemas";
 
 export default function ForgotPasswordForm() {
-  const { resetPassword } = useAuth();
   const { showToast } = useToast();
   const [sent, setSent] = useState(false);
 
@@ -27,11 +26,15 @@ export default function ForgotPasswordForm() {
   });
 
   async function onSubmit(values: ForgotPasswordFormValues) {
-    const { error } = await resetPassword(values.email);
+    // Sent directly (rather than via useAuth().resetPassword) so the
+    // recovery link can point at /reset-password instead of /login.
+    const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
 
     if (error) {
-      setError("root", { message: error });
-      showToast("error", error);
+      setError("root", { message: error.message });
+      showToast("error", error.message);
       return;
     }
 
