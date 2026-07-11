@@ -4,9 +4,13 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  // Fails fast in dev if the .env file hasn't been set up yet.
+  // createClient() throws synchronously if either value is missing, which
+  // crashes the whole React tree to a blank white screen on every route
+  // (not just /login) before anything can render. Falling back to a
+  // clearly-fake placeholder keeps the app alive; auth calls will just
+  // fail with a network error the UI can display, instead of a hard crash.
   console.error(
-    "Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. Copy client/.env.example to client/.env and fill in your Supabase project values."
+    "Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. Copy client/.env.example to client/.env and fill in your Supabase project values — auth will not work until you do."
   );
 }
 
@@ -33,11 +37,15 @@ const rememberAwareStorage = {
   removeItem: (key: string) => getActiveStorage().removeItem(key),
 };
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-    storage: rememberAwareStorage,
-  },
-});
+export const supabase = createClient(
+  supabaseUrl || "https://placeholder.supabase.co",
+  supabaseAnonKey || "placeholder-anon-key",
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storage: rememberAwareStorage,
+    },
+  }
+);

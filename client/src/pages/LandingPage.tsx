@@ -4,6 +4,7 @@ import Logo from "@/components/ui/Logo";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import DisclaimerBanner from "@/components/ui/DisclaimerBanner";
+import { useAuth } from "@/hooks/useAuth";
 
 const modes = [
   { icon: "👩‍⚕️", label: "Doctor" },
@@ -14,13 +15,26 @@ const modes = [
 ];
 
 export default function LandingPage() {
+  const { user } = useAuth();
+
   return (
     <div className="flex min-h-screen flex-col bg-surface">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-6 sm:px-6">
         <Logo />
-        <Link to="/dashboard">
-          <Button variant="secondary">Open dashboard</Button>
-        </Link>
+        {user ? (
+          <Link to="/dashboard">
+            <Button variant="secondary">Open dashboard</Button>
+          </Link>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Link to="/login">
+              <Button variant="secondary">Log in</Button>
+            </Link>
+            <Link to="/signup">
+              <Button>Sign up</Button>
+            </Link>
+          </div>
+        )}
       </header>
 
       <main className="flex-1">
