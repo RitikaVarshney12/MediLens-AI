@@ -1,38 +1,34 @@
-import Card from "@/components/ui/Card";
-
-const upcomingSections = [
-  {
-    title: "Upload a report",
-    description: "Add a blood report, prescription, or lab result to get a plain-language explanation.",
-  },
-  {
-    title: "Health timeline",
-    description: "Track how your results change over time, once you've uploaded more than one report.",
-  },
-  {
-    title: "Ask MediLens",
-    description: "Ask questions about your reports in your own words.",
-  },
-];
+import StatCard from "@/components/ui/StatCard";
+import UploadDropzone from "@/components/reports/UploadDropzone";
+import ReportsList from "@/components/reports/ReportsList";
+import { useReports } from "@/hooks/useReports";
+import { computeReportStats } from "@/lib/reports/stats";
+import { formatDate, formatFileSize } from "@/lib/formatters";
 
 export default function DashboardPage() {
+  const { data: reports, isLoading } = useReports();
+  const stats = computeReportStats(reports ?? []);
+
   return (
     <div className="flex flex-col gap-8">
       <div>
         <h1 className="text-2xl font-bold text-ink">Welcome to MediLens AI</h1>
-        <p className="mt-1 text-ink-soft">
-          This is your dashboard. Upload and explanation features are coming in the next phase.
-        </p>
+        <p className="mt-1 text-ink-soft">Upload a report to get started.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        {upcomingSections.map((section) => (
-          <Card key={section.title} className="flex flex-col gap-2">
-            <h2 className="font-semibold text-ink">{section.title}</h2>
-            <p className="text-sm text-ink-soft">{section.description}</p>
-          </Card>
-        ))}
+        <StatCard label="Total reports" value={stats.totalReports} icon="🗂️" />
+        <StatCard label="Storage usage" value={formatFileSize(stats.storageUsageBytes)} icon="💾" />
+        <StatCard
+          label="Latest upload"
+          value={stats.latestUploadAt ? formatDate(stats.latestUploadAt) : "—"}
+          icon="🕒"
+        />
       </div>
+
+      <UploadDropzone />
+
+      <ReportsList reports={reports ?? []} isLoading={isLoading} />
     </div>
   );
 }
