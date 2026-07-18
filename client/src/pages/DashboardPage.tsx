@@ -1,4 +1,5 @@
 import StatCard from "@/components/ui/StatCard";
+import Skeleton from "@/components/ui/Skeleton";
 import UploadDropzone from "@/components/reports/UploadDropzone";
 import ReportsList from "@/components/reports/ReportsList";
 import { useReports } from "@/hooks/useReports";
@@ -17,13 +18,23 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard label="Total reports" value={stats.totalReports} icon="🗂️" />
-        <StatCard label="Storage usage" value={formatFileSize(stats.storageUsageBytes)} icon="💾" />
-        <StatCard
-          label="Latest upload"
-          value={stats.latestUploadAt ? formatDate(stats.latestUploadAt) : "—"}
-          icon="🕒"
-        />
+        {isLoading ? (
+          <>
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+          </>
+        ) : (
+          <>
+            <StatCard label="Total reports" value={stats.totalReports} icon="🗂️" />
+            <StatCard label="Storage usage" value={formatFileSize(stats.storageUsageBytes)} icon="💾" />
+            <StatCard
+              label="Latest upload"
+              value={stats.latestUploadAt ? formatDate(stats.latestUploadAt) : "—"}
+              icon="🕒"
+            />
+          </>
+        )}
       </div>
 
       <UploadDropzone />

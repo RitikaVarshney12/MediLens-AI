@@ -9,7 +9,7 @@ const STATUS_STYLES: Record<ReportStatus, string> = {
 
 const STATUS_LABELS: Record<ReportStatus, string> = {
   uploaded: "Uploaded",
-  processing: "Processing",
+  processing: "Processing OCR",
   completed: "Completed",
   failed: "Failed",
 };
