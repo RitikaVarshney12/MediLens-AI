@@ -21,6 +21,11 @@ class Settings(BaseSettings):
     STORAGE_BUCKET: str = "medical-reports"
     MAX_UPLOAD_SIZE_MB: int = 20
 
+    OCR_LANGUAGES: list[str] = ["en"]
+    OCR_GPU: bool = False
+    OCR_TIMEOUT_SECONDS: int = 120
+    OCR_MAX_RETRIES: int = 2
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
